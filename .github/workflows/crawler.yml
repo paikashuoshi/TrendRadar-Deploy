@@ -117,10 +117,6 @@ jobs:
         with:
           python-version: "3.10"
           cache: "pip"
-      - name: Keepalive Workflow
-        uses: gautamkrishnar/keepalive-workflow@v1
-        with:
-          use_api: true  # 通过 API 模拟活动，无需产生 commit
 
       - name: Install dependencies
         if: success()
@@ -171,3 +167,15 @@ jobs:
           S3_REGION: ${{ secrets.S3_REGION }}
           GITHUB_ACTIONS: true
         run: python -m trendradar
+      - name: Commit and push changes
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          git add output/
+          git commit -m "Auto update data: $(date)" || exit 0
+          git push
+
+      - name: Keepalive Workflow
+        uses: gautamkrishnar/keepalive-workflow@v1
+        with:
+          use_api: true
